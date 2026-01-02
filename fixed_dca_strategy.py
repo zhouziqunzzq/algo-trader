@@ -14,7 +14,7 @@ class FixedDCA(bt.Strategy):
 
     params = dict(
         amount=1000.0,
-        interval=30,
+        interval=20,
         portfolio=None,
         reserve_multiplier=1.01,
         _sum_tol=1e-9,
@@ -46,6 +46,9 @@ class FixedDCA(bt.Strategy):
         # Only run when interval has elapsed (or first time)
         if self._last_invest_bar >= 0 and (len(self) - self._last_invest_bar) < self.p.interval:
             return
+        # Print day of the tick for debugging
+        dt = self.datas[0].datetime.date(0)
+        self.log(f"Scheduled investment on {dt}")
         # Determine how much cash is actually available. Multiple simultaneous
         # buys can exceed available cash because orders execute together; to
         # avoid margin rejections, cap the deployable amount to what we have
