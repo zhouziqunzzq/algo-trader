@@ -1,8 +1,10 @@
 import backtrader as bt
 import datetime
 
+
 from data_loader import download_ohlc_yf
 from stats import install_daily_stats_analyzers, print_stats
+from plots import plot_equity_curve, plot_drawdown_curve
 from indicator_strategy import IndicatorStrategy
 from random_strategy import RandomBuyStrategy
 from fixed_dca_strategy import FixedDCA
@@ -50,13 +52,16 @@ def run_backtest(
     )
     if show_plot:
         cerebro.plot()
+        plot_equity_curve(strat, title="Equity Curve", save_path=None)
+        plot_drawdown_curve(strat, title="Drawdown", save_path=None)
 
 
 def main():
-    start_cash = 520_000.0
+    # start_cash = 520_000.0
+    start_cash = 2000.0  # Start from near zero and simulate deposit over time
     tickers = []  # to be added later according to portfolio
-    fromdate = datetime.datetime(2005, 11, 30)
-    todate = datetime.datetime(2025, 11, 30)
+    fromdate = datetime.datetime(2005, 1, 1)
+    todate = datetime.datetime(2025, 12, 31)
     warm_up_days = 0
     show_plot = True
 
@@ -85,7 +90,7 @@ def main():
         "QQQ": 0.25,
         "NVDA": 0.20,
         "VGT": 0.15,
-        "VOO": 0.10,
+        "SPY": 0.10,
         "VTI": 0.10,
         "META": 0.10,
         "BND": 0.10,
@@ -103,7 +108,7 @@ def main():
     joint_portfolio = {
         "QQQ": 0.25,
         "VGT": 0.10,
-        "VOO": 0.25,
+        "SPY": 0.25,
         "BRK-B": 0.15,
         "GLD": 0.10,
         "VTI": 0.05,
@@ -114,12 +119,14 @@ def main():
         "SPMO": 1.0,
     }
 
-    portfolio = all_in_portfolio
+    portfolio = joint_portfolio
     cerebro.addstrategy(
         FixedDCA,
         amount=2000.0,
+        deposit_amount=2000.0,
         interval=10,  # biweekly on trading days
         portfolio=portfolio,
+        reserve_multiplier=1.0,
     )
     tickers.extend(portfolio.keys())
 

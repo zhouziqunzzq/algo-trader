@@ -11,6 +11,7 @@ Notes:
  - Normalizes timezone to tz-naive and title-cases column names.
  - Handles single- and multi-ticker shapes returned by yfinance.
 """
+
 from __future__ import annotations
 
 from typing import Dict, Iterable, Optional
